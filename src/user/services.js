@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
-
 const { UserRepository } = require("./models");
-const { log } = require('../dbConfig');
-
+const { serializeUser } = require('./utils');
 const userRepository = new UserRepository();
 
 async function createUser(user) {
@@ -10,27 +8,24 @@ async function createUser(user) {
         console.log(await userRepository.findByEmail(user.email));
         throw new Error('User already exists');
     }
-    return userRepository.createUser(user);
+    const userData = await userRepository.createUser(user);
+    return serializeUser(userData.dataValues);
 }
 
 async function findByEmail(email) {
-    return userRepository.findByEmail(email);
+    const user = userRepository.findByEmail(email);
+    return serializeUser(user.dataValues);
 }
 
 async function findById(id) {
     const user = await userRepository.findById(id);
-    const { password, role, ...userWithoutPassword } = user.dataValues;
-    return userWithoutPassword;
+    return serializeUser(user.dataValues);
 }
 
-async function updatePassword(id, newPassword) {
-    const user = await userRepository.findById(id);
-    return user.updatePassword(newPassword);
-}
 
 async function login(email, u_password) {
     const user = await userRepository.findByEmail(email);
-    const { password, role, ...userWithoutPassword } = user.dataValues;
+    const serializedUser = serializeUser(user.dataValues);
     if (!user) {
         throw new Error('User not found');
     }
@@ -44,7 +39,7 @@ async function login(email, u_password) {
     });
 
 
-    return { accessToken, userWithoutPassword };
+    return { accessToken, serializedUser };
 }
 
 async function signUp(user) {
@@ -61,7 +56,6 @@ module.exports = {
     createUser,
     findByEmail,
     findById,
-    updatePassword,
     login,
     signUp
 };

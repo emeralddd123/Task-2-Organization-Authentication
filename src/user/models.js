@@ -62,13 +62,13 @@ class UserRepository {
     }
 
     async findById(id) {
-        return User.findByPk(id);
+        const user = await User.findByPk(id);
+        return user;
     }
 
     async createUser(user) {
         const userData = await User.create(user);
-        const { password, role, ...userWithoutPassword } = userData.dataValues;
-        return userWithoutPassword;
+        return userData;
     }
 
 

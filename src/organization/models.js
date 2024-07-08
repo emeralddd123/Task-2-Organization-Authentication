@@ -19,6 +19,15 @@ const Organization = db.define('Organization', {
     },
 });
 
+User.belongsToMany(Organization, { through: 'UserOrganizations' });
+Organization.belongsToMany(User, { through: 'UserOrganizations' });
+
+Organization.belongsTo(User, { as: "creator", foreignKey: "creatorId" });
+User.hasMany(Organization, {
+    as: "createdOrganizations",
+    foreignKey: "creatorId",
+});
+
 class OrganizationRepository {
     async findByName(name) {
         return Organization.findOne({ where: { name } });
@@ -40,19 +49,20 @@ class OrganizationRepository {
         return user.getOrganizations();
     }
 
-    async createOrganization(name, description) {
-        return Organization.create({ name, description });
-    }
+    async createOrganization(name, description, user) {
+        const organization = await Organization.create({ name, description });
+        await organization.addUser(user);
+        return organization;
+    
 
     async updateOrganization(organization, name, description) {
-        organization.name = name;
-        organization.description = description;
-        return organization.save();
-    }
+            organization.name = name;
+            organization.description = description;
+            return organization.save();
+        }
 
+    }
 }
 
-// User.belongsToMany(Organization, { through: 'UserOrganizations' });
-// Organization.belongsToMany(User, { through: 'UserOrganizations' });
 
 module.exports = { Organization, OrganizationRepository };

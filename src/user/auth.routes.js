@@ -31,7 +31,7 @@ authRouter.post("/register", validUserCreation, async (req, res) => {
 authRouter.post("/login", validLoginCreation, async (req, res) => {
     try {
         const loginCredentials = req.body;
-        const { accessToken, userWithoutPassword } = await userService.login(
+        const { accessToken, serializedUser } = await userService.login(
             loginCredentials.email,
             loginCredentials.password
         );
@@ -42,7 +42,7 @@ authRouter.post("/login", validLoginCreation, async (req, res) => {
             message: "Login successful",
             data: {
                 accessToken: accessToken,
-                user: userWithoutPassword,
+                user: serializedUser,
             },
         });
     } catch (error) {
