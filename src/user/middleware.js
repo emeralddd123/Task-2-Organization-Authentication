@@ -49,7 +49,10 @@ const authenticate = (req, res, next) => {
 
         jwt.verify(token, process.env.SECRET_KEY, (error, decodedToken) => {
             if (error) {
-                return res.status(401).json({ message: error.message })
+                return res.status(401).json({
+                    status: "UnAuthorized",
+                    statusCode: 401, message: error.message
+                })
             }
 
             req.user = decodedToken;
@@ -63,4 +66,4 @@ const authenticate = (req, res, next) => {
 
 
 
-module.exports = { validUserCreation, validLoginCreation,  authenticate};
+module.exports = { validUserCreation, validLoginCreation, authenticate };

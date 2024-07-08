@@ -8,14 +8,15 @@ const userRouter = express.Router();
 
 userRouter.get("/:id", authenticate, async (req, res) => {
     try {
-        if (req.user.id !== req.params.id) {
+        const user = await userService.findById(req.params.id);
+
+        if (req.user.id !== user.userId) {
             return res.status(403).json({
                 status: "Forbidden",
-                message: "You are not authorized to view this user",
+                message: "You are not authorized to view this info",
                 statusCode: 403,
             });
         }
-        const user = await userService.findById(req.params.id);
         res.status(200).json({
             status: "success",
             message: "Your Information",
