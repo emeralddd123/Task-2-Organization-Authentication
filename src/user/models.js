@@ -35,6 +35,7 @@ const User = db.define('User', {
         type: DataTypes.ENUM('admin', 'user'),
         defaultValue: 'user',
     }
+
 }, {
     hooks: {
         beforeCreate: async (user) => {
@@ -45,7 +46,7 @@ const User = db.define('User', {
     }
 });
 
-User.prototype.comparePassword = function (password) {
+User.prototype.comparePassword = async function (password) {
     return bcrypt.compare(password, this.password);
 };
 
@@ -56,8 +57,8 @@ User.prototype.updatePassword = async function (newPassword) {
 
 class UserRepository {
     async findByEmail(email) {
-        const {password, role, ...userWithoutPassword} = await User.findOne({ where: { email } });
-        return userWithoutPassword;
+        const user = await User.findOne({ where: { email } });
+        return user;
     }
 
     async findById(id) {
@@ -70,13 +71,7 @@ class UserRepository {
         return userWithoutPassword;
     }
 
-    async updateUser(user) {
-        return user.save();
-    }
 
-    async deleteUser(user) {
-        return user.destroy();
-    }
 }
 
 module.exports = { User, UserRepository };

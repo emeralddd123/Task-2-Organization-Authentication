@@ -1,4 +1,7 @@
 const Joi = require("joi");
+const jwt = require("jsonwebtoken");
+require('dotenv').config()
+
 
 const userCreateSchema = Joi.object({
     email: Joi.string().min(3).max(255).required(),
@@ -32,5 +35,31 @@ const validLoginCreation = (req, res, next) => {
 };
 
 
+const authenticate = (req, res, next) => {
+    try {
+        const authToken = req.headers.authorization;
+        if (!authToken) {
+            return res.status(401).json({ message: "Authentication Credentials not provided" });
+        }
+        if (authToken.split(' ')[0] !== "Bearer" || !authToken.split(' ')[1]) {
+            return res.json("Invalid authorization header");
+        }
 
-module.exports = { validUserCreation, validLoginCreation };
+        const token = authToken.split(' ')[1];
+
+        jwt.verify(token, process.env.SECRET_KEY, (error, decodedToken) => {
+            if (error) {
+                return res.status(401).json({ message: error.message })
+            }
+
+            req.user = decodedToken;
+            next();
+
+        })
+    } catch (error) {
+        return res.status(500).json({ message: "An error occurred" });
+    }
+}
+
+
+module.exports = { validUserCreation, validLoginCreation,  authenticate};

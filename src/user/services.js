@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 const { UserRepository } = require("./models");
+const { log } = require('../dbConfig');
 
 const userRepository = new UserRepository();
 
@@ -17,7 +18,9 @@ async function findByEmail(email) {
 }
 
 async function findById(id) {
-    return userRepository.findById(id);
+    const user = await userRepository.findById(id);
+    const { password, role, ...userWithoutPassword } = user.dataValues;
+    return userWithoutPassword;
 }
 
 async function updatePassword(id, newPassword) {
@@ -25,22 +28,23 @@ async function updatePassword(id, newPassword) {
     return user.updatePassword(newPassword);
 }
 
-async function login(email, password) {
+async function login(email, u_password) {
     const user = await userRepository.findByEmail(email);
+    const { password, role, ...userWithoutPassword } = user.dataValues;
     if (!user) {
         throw new Error('User not found');
     }
-    const isPasswordCorrect = await user.comparePassword(password);
+    const isPasswordCorrect = await user.comparePassword(u_password);
     if (!isPasswordCorrect) {
         throw new Error('Password is incorrect');
     }
 
-    const accessToken =  jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET_KEY, {
+    const accessToken = jwt.sign({ id: user.userId, email: user.email }, process.env.SECRET_KEY, {
         expiresIn: '10h'
     });
 
 
-    return accessToken;
+    return { accessToken, userWithoutPassword };
 }
 
 async function signUp(user) {
