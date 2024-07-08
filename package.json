@@ -1,0 +1,36 @@
+{
+  "name": "task-2-organization-authentication",
+  "version": "1.0.0",
+  "description": "Authentication and Organization",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "jest --detectOpenHandles",
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+  },
+  "keywords": [
+    "authentication",
+    "expressJs",
+    "jwt",
+    "sequelize"
+  ],
+  "author": "Usman Abdulsalam",
+  "license": "ISC",
+  "dependencies": {
+    "@sequelize/core": "^7.0.0-alpha.41",
+    "@sequelize/postgres": "^7.0.0-alpha.41",
+    "@sequelize/sqlite3": "^7.0.0-alpha.41",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "jest": "^29.7.0",
+    "joi": "^17.13.3",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.1.4",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7"
+  }
+}
