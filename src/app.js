@@ -3,7 +3,6 @@ const morgan = require('morgan');
 const cors = require('cors');
 const { join } = require('path');
 
-const authRouter = require('./user/auth.routes');
 
 require('dotenv').config();
 
@@ -23,8 +22,9 @@ app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
 
-app.use('/api/auth', authRouter);
+app.use('/api/auth', require('./user/auth.routes'));
 app.use('/api/user', require('./user/user.routes'));
+app.use('/api/organization', require('./organization/routes'));
 // app.use('/', require('./webRouter'));
 
 app.get('*', async (req, res) => {

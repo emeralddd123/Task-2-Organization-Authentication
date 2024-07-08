@@ -31,13 +31,6 @@ userRouter.get("/:id", authenticate, async (req, res) => {
     }
 });
 
-userRouter.put("/:id", (req, res) => {
-    // Logic for updating user information
-});
 
-// Route for deleting a user
-userRouter.delete("/user/:id", (req, res) => {
-    // Logic for deleting a user
-});
 
 module.exports = userRouter;

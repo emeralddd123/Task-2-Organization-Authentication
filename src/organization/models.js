@@ -29,16 +29,24 @@ User.hasMany(Organization, {
 });
 
 class OrganizationRepository {
-    async findByName(name) {
-        return Organization.findOne({ where: { name } });
-    }
-
     async addUser(organization, user) {
         return organization.addUser(user);
     }
 
-    async removeUser(organization, user) {
-        return organization.removeUser(user);
+    async createOrganization(name, description, creatorId) {
+        const user = await User.findByPk(creatorId);
+        const org = await Organization.create({ name, description, creatorId: user.userId });
+        await user.addOrganization(org);
+        return org;
+
+    }
+
+    async findByName(name) {
+        return Organization.findOne({ where: { name } });
+    }
+
+    async findById(id) {
+        return Organization.findByPk(id);
     }
 
     async getUsers(organization) {
@@ -49,20 +57,14 @@ class OrganizationRepository {
         return user.getOrganizations();
     }
 
-    async createOrganization(name, description, user) {
-        const organization = await Organization.create({ name, description });
-        await organization.addUser(user);
-        return organization;
-    
+    async getFellowOrganizationMembers(user, organization) {
+        return user.getOrganizations({ where: { orgId: organization.orgId } });
+    }
 
-    async updateOrganization(organization, name, description) {
-            organization.name = name;
-            organization.description = description;
-            return organization.save();
-        }
+
 
     }
-}
+
 
 
 module.exports = { Organization, OrganizationRepository };
