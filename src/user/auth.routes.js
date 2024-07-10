@@ -16,6 +16,7 @@ authRouter.post("/register", validUserCreation, async (req, res) => {
         const { accessToken } = await userService.login(userData.email, userData.password);
         res.status(201).json({
             status: "success",
+            statusCode: 201,
             message: "Registration successful",
             data: {
                 accessToken: accessToken,

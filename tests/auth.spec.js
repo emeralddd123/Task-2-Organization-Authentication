@@ -2,14 +2,83 @@ const request = require("supertest");
 const jwt = require("jsonwebtoken");
 
 const sequelize = require("../dbConfig");
+const app = require("./app");
+
 
 const { login } = require('../src/user/services')
-const app = require("./app");
 const { User } = require("../user/models");
+const { getOrganizations } = require('../src/organization/services')
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
 });
+
+describe("Authentication Test Suite", () => {
+  let validAccessToken
+  let userId
+  const SignupData = {
+    email: "testUser@example.com",
+    password: "password",
+    firstName: "Test",
+    lastName: "User",
+    phone: "09012345678"
+  };
+
+  it("Should Register User Successfully with Default Organisation", async () => {
+    const response = await request(app).post("/api/auth/register").send(SignupData)
+
+    expectedOrgName = `${SignupData.firstName}'s Organisation`;
+
+    const data = response.body.data;
+    //saving dem info for later usage
+    validAccessToken = data.accessToken
+    userId = data.user.userId
+
+    expect(response.statusCode).toEqual(201);
+    expect(data).toHaveProperty("user");
+    expect(data.user).toHaveProperty("email", SignupData.email);
+    expect(data.user).toHaveProperty("firstName", SignupData.firstName);
+    expect(data.user).toHaveProperty("email", SignupData.email);
+    expect(data.user).toHaveProperty("phone", SignupData.phone);
+    expect(data).toHaveProperty("accessToken");
+  })
+
+  it("Verify the default organisation name is correctly generated", async () => {
+    const organisations = getOrganizations(userId);
+
+    firstUserOrg = organisations[0].orgId;
+    expect(organisations).toHaveLength(1);
+    expect(organisations[0].name).toBe(expectedOrgName);
+  })
+
+  it("Check that the response contains the expected user details and access token", async () => {
+    const newUser = {
+      email: "newUser@example.com",
+    password: "password",
+    firstName: "NewUser",
+    lastName: "User",
+    phone: "09012645638"
+    }
+    const response = await request(app).post("/api/auth/register").send(SignupData)
+
+    const data = response.body.data;
+
+    expect(response.statusCode).toEqual(201);
+    expect(data).toHaveProperty("user");
+    expect(data.user).toHaveProperty("email", newUser.email);
+    expect(data.user).toHaveProperty("firstName", newUser.firstName);
+    expect(data.user).toHaveProperty("email", newUser.email);
+    expect(data.user).toHaveProperty("phone", newUser.phone);
+    expect(data).toHaveProperty("accessToken");
+  })
+
+  it("It Should Log the user in successfully, Now That the Info is valid", async()=>{
+    
+  })
+
+})
+
+
 
 describe("Token generation", () => {
   const userData = {
