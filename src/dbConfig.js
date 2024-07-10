@@ -1,15 +1,27 @@
 const { Sequelize } = require('@sequelize/core');
+const pgUrl = process.env.DB_URL
 
 const nodeEnv = process.env.NODE_ENV || 'dev';
 
-const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'memory',
+let sequelize
 
-    define: {
-        paranoid: true // to enable soft delete
-    }
-});
+if (nodeEnv == 'dev'){
+    sequelize = new Sequelize({
+        dialect: 'sqlite',
+        storage: 'memory',
+    
+        define: {
+            paranoid: true 
+        }
+    });
+} else {
+    sequelize = new Sequelize({
+        dialect: 'postgres',
+        url: pgUrl
+    })
+}
+
+
 
 
 module.exports = sequelize;

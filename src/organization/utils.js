@@ -8,7 +8,7 @@ const orgSerializer = (org) => {
 }
 
 const orgListSerializer = (orgs) => {
-    return orgs.map(org => orgserializer(org));
+    return orgs.map(org => orgSerializer(org));
 };
 
 

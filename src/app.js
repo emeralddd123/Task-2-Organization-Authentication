@@ -23,8 +23,8 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 app.use('/api/auth', require('./user/auth.routes'));
-app.use('/api/user', require('./user/user.routes'));
-app.use('/api/organization', require('./organization/routes'));
+app.use('/api/users', require('./user/user.routes'));
+app.use('/api/organisations', require('./organization/routes'));
 // app.use('/', require('./webRouter'));
 
 app.get('*', async (req, res) => {

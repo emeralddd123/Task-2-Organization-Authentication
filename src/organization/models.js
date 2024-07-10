@@ -53,8 +53,19 @@ class OrganizationRepository {
         return organization.getUsers();
     }
 
-    async getOrganizations(user) {
-        return user.getOrganizations();
+    async getOrganizations(userId) {
+        // const organizations = 
+        const user = await User.findByPk(userId, {
+            include: [
+              {
+                association: User.associations.organizations,
+                through: { attributes: [] }
+              }
+            ]
+          });
+          console.log(user)
+        const organizations = user.organizations
+        return organizations;
     }
 
     async getFellowOrganizationMembers(user, organization) {
