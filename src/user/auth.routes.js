@@ -1,5 +1,6 @@
 const express = require("express");
 const userService = require("./services");
+const { createOrganization } = require('../organization/services')
 
 const { validUserCreation, validLoginCreation } = require("./middleware");
 
@@ -7,9 +8,12 @@ const authRouter = express.Router();
 
 authRouter.post("/register", validUserCreation, async (req, res) => {
     try {
-        const user = req.body;
-        const createdUser = await userService.createUser(user);
-        const { accessToken } = await userService.login(user.email, user.password);
+        const userData = req.body;
+        const createdUser = await userService.createUser(userData);
+        await createOrganization(
+            { name: `${userData.firstName}'s Organisation`, description: `desc 1` },
+            createdUser.userId)
+        const { accessToken } = await userService.login(userData.email, userData.password);
         res.status(201).json({
             status: "success",
             message: "Registration successful",
@@ -36,7 +40,7 @@ authRouter.post("/login", validLoginCreation, async (req, res) => {
             loginCredentials.password
         );
 
-        
+
         res.status(201).json({
             status: "success",
             message: "Login successful",

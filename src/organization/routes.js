@@ -27,6 +27,7 @@ orgRouter.post('/', validOrganizationCreation, async (req, res) => {
 
 orgRouter.get('', async (req, res) => {
     try {
+       
         const organizations = await organizationService.getOrganizations(req.user.id)
 
         res.status(200).json({

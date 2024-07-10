@@ -1,9 +1,10 @@
 const request = require("supertest");
 const jwt = require("jsonwebtoken");
 
-const { generateAuthToken } = require("../controllers/authController");
 const sequelize = require("../dbConfig");
-const app = require("../app");
+
+const { login } = require('../src/user/services')
+const app = require("./app");
 const { User } = require("../user/models");
 
 beforeAll(async () => {
@@ -17,7 +18,7 @@ describe("Token generation", () => {
   };
 
   it("verify token expires at the correct time", () => {
-    const token = generateAuthToken(userData.email, userData.userId);
+    const { accessToken } = generateAuthToken(userData.email, userData.userId);
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     // console.log(decodedToken)
     expect(decodedToken.exp).toBeLessThanOrEqual(
@@ -46,7 +47,7 @@ describe("End-to-End Test for Auth Endpoints", () => {
     lastName: "Doe",
     email: "2nduser@example.com",
     password: "password123",
-    phone: "0101010",
+    phone: "12345678901",
   };
 
   const invalidUser = {
@@ -78,7 +79,7 @@ describe("End-to-End Test for Auth Endpoints", () => {
   it("verify registration fails when there’s duplicate email", async () => {
     const response = await request(app).post("api/auth/register").send(validUser);
 
-    console.log({response: response.body});
+    console.log({ response: response.body });
 
     expect(response.status).toBe(422);
     expect(response.body.status).toBe("Bad request");
