@@ -8,8 +8,10 @@ const sequelize = new Sequelize({
     storage: 'memory',
 
     define: {
-        paranoid: true 
-    }
+        paranoid: true
+    },
+
+    sync: { force: true }
 });
 
 

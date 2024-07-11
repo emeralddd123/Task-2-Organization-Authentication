@@ -27,6 +27,10 @@ app.use('/api/users', require('./user/user.routes'));
 app.use('/api/organisations', require('./organization/routes'));
 // app.use('/', require('./webRouter'));
 
+app.get('', async(req, res)=> {
+    res.status(200).json({message:"Welcome to Oganization's Authentication"})
+})
+
 app.get('*', async (req, res) => {
     let message;
     res.status(404).render('404');

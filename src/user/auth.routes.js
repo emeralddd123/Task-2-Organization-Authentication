@@ -24,6 +24,14 @@ authRouter.post("/register", validUserCreation, async (req, res) => {
             },
         });
     } catch (error) {
+        if (error.message == 'User already exists') {
+            return res.status(422).json({
+                status: "Bad request",
+                message: "User Already Exists",
+                statusCode: 422,
+                error: error.message,
+            });
+        }
         res.status(400).json({
             status: "Bad request",
             message: "Registration unsuccessful",
@@ -42,8 +50,9 @@ authRouter.post("/login", validLoginCreation, async (req, res) => {
         );
 
 
-        res.status(201).json({
+        res.status(200).json({
             status: "success",
+            statusCode: 200,
             message: "Login successful",
             data: {
                 accessToken: accessToken,
@@ -52,7 +61,7 @@ authRouter.post("/login", validLoginCreation, async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(400).json({
+        res.status(401).json({
             status: "Bad request",
             message: "Authentication Failed",
             statusCode: 401,

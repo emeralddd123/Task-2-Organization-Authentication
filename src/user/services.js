@@ -5,7 +5,6 @@ const userRepository = new UserRepository();
 
 async function createUser(user) {
     if (await userRepository.findByEmail(user.email)) {
-        console.log(await userRepository.findByEmail(user.email));
         throw new Error('User already exists');
     }
     const userData = await userRepository.createUser(user);
@@ -13,7 +12,7 @@ async function createUser(user) {
 }
 
 async function findByEmail(email) {
-    const user = userRepository.findByEmail(email);
+    const user = await userRepository.findByEmail(email);
     return serializeUser(user.dataValues);
 }
 
